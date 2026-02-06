@@ -1,103 +1,123 @@
-import Image from "next/image";
+"use client"
+
+import React, { useState, useMemo } from "react";
+import { cn } from "../lib/utils"
+import Queen from "./queen";
+
+type CelData = {
+  row: number
+  col: number
+  color: string
+  value: string
+  fill: any;
+}
+
+const lightMap = {
+  0: "bg-stone-800",
+  1: "bg-lime-900"
+}
+
+const darkMap = {
+  0: "bg-stone-900",
+  1: "bg-lime-950"
+}
+
+const Cel = ({row, col, color, value, fill}: CelData) => {
+    
+    const squareColor: string = useMemo(() => {
+      if (color == "light") {
+        return lightMap[value === "0" ? 0 : 1]
+      } else {
+        return darkMap[value === "0" ? 0 : 1]
+      }
+    }, [value])
+
+    const disabled = useMemo(() => {
+      return !(value === "0")
+    }, [value])
+
+    const queenPlaced = useMemo(() => {
+      return value === "Q"
+    }, [value])
+    
+    return (
+      <button 
+        onClick={() => fill(row, col)} 
+        disabled={disabled}
+        className={cn("h-full w-full flex items-center justify-center border border-black", "transition-colors duration-500 ease-in-out", squareColor)} 
+        data-row={row} 
+        data-col={col}
+      >
+        <Queen placed={queenPlaced}/>
+      </button>
+    )
+  }
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [boardSize, setBoardSize] = useState(8);
+  const [boardRep, setBoardRep] = useState(Array.from({length: boardSize}, () => Array(boardSize).fill("0")))
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  function fill(row: number, col: number) {
+    let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize) - 1 - col)
+    let k: number = 1
+
+    setBoardRep((prev) => {
+      let next = [...prev]
+      next[row][col] = "Q"
+      while (k <= fillStop) {
+        if (row - k >= 0) {
+          next[row - k][col] = '.'
+        }
+        if (row + k < boardSize) {
+          next[row + k][col] = '.'
+        }
+        if (col - k >= 0) {
+          next[row][col - k] = '.'
+        }
+        if (col + k < boardSize) {
+          next[row][col + k] = '.'
+        }
+        if (row - k >= 0 && col - k >= 0) {
+          next[row - k][col - k] = '.'
+        }
+        if (row + k < boardSize && col - k >= 0) {
+          next[row + k][col - k] = '.'
+        }
+        if (row - k >= 0 && col + k < boardSize) {
+          next[row - k][col + k] = '.'
+        }
+        if (row + k < boardSize && col + k < boardSize) {
+          next[row + k][col + k] = '.'
+        }
+        k++
+      }
+      return next
+    })
+  }
+
+  return (
+    <div className="flex justify-center h-screen">
+      <div className="w-full mx-24 my-4">
+        <div id="chess_board" className="w-[500px] h-[500px] border border-black grid grid-rows-8 grid-cols-8">
+          {Array.from({length: boardSize*boardSize}, (_, idx) => {
+              let row = Math.floor(idx/boardSize);
+              let col = idx%boardSize
+
+              let key = row.toString() + "_" + col.toString()
+              return (
+                <Cel 
+                  key={key} 
+                  row={row} 
+                  col={col} 
+                  color={row%2 == col%2 ? "light" : "dark"}
+                  value={boardRep[row][col]}
+                  fill={fill}
+                ></Cel>
+              )
+            } 
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
