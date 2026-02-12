@@ -1,122 +1,59 @@
 "use client"
 
-import React, { useState, useMemo } from "react";
-import { cn } from "../lib/utils"
-import Queen from "./queen";
-
-type CelData = {
-  row: number
-  col: number
-  color: string
-  value: string
-  fill: any;
-}
-
-const lightMap = {
-  0: "bg-stone-800",
-  1: "bg-lime-900"
-}
-
-const darkMap = {
-  0: "bg-stone-900",
-  1: "bg-lime-950"
-}
-
-const Cel = ({row, col, color, value, fill}: CelData) => {
-    
-    const squareColor: string = useMemo(() => {
-      if (color == "light") {
-        return lightMap[value === "0" ? 0 : 1]
-      } else {
-        return darkMap[value === "0" ? 0 : 1]
-      }
-    }, [value])
-
-    const disabled = useMemo(() => {
-      return !(value === "0")
-    }, [value])
-
-    const queenPlaced = useMemo(() => {
-      return value === "Q"
-    }, [value])
-    
-    return (
-      <button 
-        onClick={() => fill(row, col)} 
-        disabled={disabled}
-        className={cn("h-full w-full flex items-center justify-center border border-black", "transition-colors duration-500 ease-in-out", squareColor)} 
-        data-row={row} 
-        data-col={col}
-      >
-        <Queen placed={queenPlaced}/>
-      </button>
-    )
-  }
+import React from "react";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import useChessboardContext from "./chessboard/useChessboardContext";
+import range from "@/utils/range";
+import { Chessboard } from "./chessboard/chessboard";
 
 export default function Home() {
-  const [boardSize, setBoardSize] = useState(8);
-  const [boardRep, setBoardRep] = useState(Array.from({length: boardSize}, () => Array(boardSize).fill("0")))
-
-  function fill(row: number, col: number) {
-    let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize) - 1 - col)
-    let k: number = 1
-
-    setBoardRep((prev) => {
-      let next = [...prev]
-      next[row][col] = "Q"
-      while (k <= fillStop) {
-        if (row - k >= 0) {
-          next[row - k][col] = '.'
-        }
-        if (row + k < boardSize) {
-          next[row + k][col] = '.'
-        }
-        if (col - k >= 0) {
-          next[row][col - k] = '.'
-        }
-        if (col + k < boardSize) {
-          next[row][col + k] = '.'
-        }
-        if (row - k >= 0 && col - k >= 0) {
-          next[row - k][col - k] = '.'
-        }
-        if (row + k < boardSize && col - k >= 0) {
-          next[row + k][col - k] = '.'
-        }
-        if (row - k >= 0 && col + k < boardSize) {
-          next[row - k][col + k] = '.'
-        }
-        if (row + k < boardSize && col + k < boardSize) {
-          next[row + k][col + k] = '.'
-        }
-        k++
-      }
-      return next
-    })
-  }
+  const { changeBoardSize, reset } = useChessboardContext();
 
   return (
-    <div className="flex justify-center h-screen">
-      <div className="w-full mx-24 my-4">
-        <div id="chess_board" className="w-[500px] h-[500px] border border-black grid grid-rows-8 grid-cols-8">
-          {Array.from({length: boardSize*boardSize}, (_, idx) => {
-              let row = Math.floor(idx/boardSize);
-              let col = idx%boardSize
-
-              let key = row.toString() + "_" + col.toString()
-              return (
-                <Cel 
-                  key={key} 
-                  row={row} 
-                  col={col} 
-                  color={row%2 == col%2 ? "light" : "dark"}
-                  value={boardRep[row][col]}
-                  fill={fill}
-                ></Cel>
-              )
-            } 
-          )}
+    <div className="flex flex-col h-screen min-h-[800px]">
+      <div className="flex flex-col items-center justify-end p-4 h-[200px]">
+        <h1 className="text-4xl">N Queens</h1>
+        <p className="max-w-[750px]">The objective of the "N Queens" puzzle is to place n queens on an n x n chessboard such that no queens can capture each other.
+        Configure the board below and try your skill at solving the puzzle!</p>
+      </div>
+      <div className="flex-1 flex justify-center gap-4 min-h-[500px] w-full">
+        <div className="h-full aspect-square border text-4xl">
+          <Chessboard/>
         </div>
+        <div className="flex flex-col h-full gap-3">
+          <Field>
+            <FieldLabel htmlFor="num-squares">Choose a board size:</FieldLabel>
+            <NativeSelect 
+              id="num-squares"
+              defaultValue="8"
+              onChange={(ev) => changeBoardSize(parseInt(ev.target.value))}
+            >
+              {range(4, 9).map((num) => 
+                <NativeSelectOption
+                  key={num.toString()} 
+                  value={num.toString()}
+                >
+                  {num.toString()} x {num.toString()}
+                </NativeSelectOption>
+              )}
+            </NativeSelect>
+          </Field>
+          <Button 
+            variant="outline" 
+            type="button"
+            onClick={reset}
+          >
+            Reset
+          </Button>
+          <Button variant="outline" type="button">
+            Show solution
+          </Button>
+        </div>
+      </div>
+      <div className="h-[100px] w-full">
+
       </div>
     </div>
   );

@@ -1,17 +1,29 @@
+import { SquareState } from "@/contexts/chessboard.context"
+
 type QueenProps = {
-  placed: boolean
+  squareState: SquareState
 }
 
-const Queen = ({ placed }: QueenProps) => {
+/* how to display the queen based on the square state */
+/* state 'Q': queen is placed there, show the queen */
+/* state '.': queen can't be placed there, don't show the queen */
+/* state '0': queen can be placed there, show queen on hover */
+const viewBehaviorMap = {
+  'Q': "visible",
+  '.': "invisible",
+  '0': "invisible group-hover:visible"
+}
 
-  const fillColor = placed ? "#7ccf00" : "#000000"
-  const viewBehavior = placed ? "visible" : "invisible group-hover:visible" 
+const Queen = ({ squareState }: QueenProps) => {
+
+  const fillColor = squareState === 'Q' ? "#7ccf00" : "#000000";
+  const viewBehavior = viewBehaviorMap[squareState]
 
   return (
-    <div className="group relative">
+    <div className="group relative w-full h-full flex items-center justify-center">
       <svg className={viewBehavior} xmlns="http://www.w3.org/2000/svg" version="1.1" width="45" height="45">
         <g opacity="1" fill="#ffffff" fillOpacity="0" fillRule="evenodd" stroke={fillColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="4" strokeDasharray="none" strokeOpacity="1">
-          <rect x="0" y="0" width="45" height="45" fill="#ffffff" fillOpacity="0" stroke="none" />
+          <rect x="0" y="0" fill="#ffffff" width="45" height="45" fillOpacity="0" stroke="none" />
           <path
             d="M 9 13 A 2 2 0 1 1  5,13 A 2 2 0 1 1  9 13 z"
             transform="translate(-1,-1)" />
