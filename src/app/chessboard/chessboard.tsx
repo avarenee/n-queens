@@ -5,13 +5,13 @@ import Queen from "../queen";
 import { useMemo } from "react";
 
 const lightMap = {
-  0: "bg-stone-800",
-  1: "bg-lime-900"
+  0: "bg-lightsquare-empty",
+  1: "bg-lightsquare-filled"
 }
 
 const darkMap = {
-  0: "bg-stone-900",
-  1: "bg-lime-950"
+  0: "bg-darksquare-empty",
+  1: "bg-darksquare-filled"
 }
 
 const Square = ({row, col}: { row: number, col: number }) => {
@@ -34,7 +34,7 @@ const Square = ({row, col}: { row: number, col: number }) => {
     <button 
       onClick={() => fill(row, col)} 
       disabled={disabled}
-      className={cn("h-full w-full flex items-center justify-center border border-black", squareColor)} 
+      className={cn("h-full w-full flex items-center justify-center border border-queen cursor-pointer disabled:cursor-default", squareColor)} 
       data-row={row} 
       data-col={col}
     >

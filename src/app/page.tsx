@@ -12,14 +12,14 @@ export default function Home() {
   const { changeBoardSize, reset } = useChessboardContext();
 
   return (
-    <div className="flex flex-col h-screen min-h-[800px]">
+    <div className="flex flex-col md:h-screen min-h-[800px]">
       <div className="flex flex-col items-center justify-end p-4 h-[200px]">
         <h1 className="text-4xl">N Queens</h1>
         <p className="max-w-[750px]">The objective of the "N Queens" puzzle is to place n queens on an n x n chessboard such that no queens can capture each other.
         Configure the board below and try your skill at solving the puzzle!</p>
       </div>
-      <div className="flex-1 flex justify-center gap-4 min-h-[500px] w-full">
-        <div className="h-full aspect-square border text-4xl">
+      <div className="flex-1 flex md:flex-row flex-col justify-center gap-4 min-h-[500px]">
+        <div className="h-full aspect-square border border-queen">
           <Chessboard/>
         </div>
         <div className="flex flex-col h-full gap-3">
