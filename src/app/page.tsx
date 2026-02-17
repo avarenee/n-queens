@@ -12,17 +12,15 @@ export default function Home() {
   const { changeBoardSize, reset } = useChessboardContext();
 
   return (
-    <div className="flex flex-col md:h-screen min-h-[800px]">
-      <div className="flex flex-col items-center justify-end p-4 h-[200px]">
-        <h1 className="text-4xl">N Queens</h1>
-        <p className="max-w-[750px]">The objective of the "N Queens" puzzle is to place n queens on an n x n chessboard such that no queens can capture each other.
-        Configure the board below and try your skill at solving the puzzle!</p>
+    <div className="flex flex-col items-center h-full lg:min-h-[750px] w-full">
+      <div className="p-4 flex flex-col sm:h-[150px] h-[120px] lg:w-[max(calc(70vh+250px),60vw)] w-full text-center lg:text-lg text-sm">
+        <p>The objective of the "N Queens" puzzle is to place n queens on an n x n chessboard such that no queens can capture each other. Configure the board below and try your skill at solving the puzzle!</p>
       </div>
-      <div className="flex-1 flex md:flex-row flex-col justify-center gap-4 min-h-[500px]">
-        <div className="h-full aspect-square border border-queen">
+      <div className="flex flex-col lg:justify-center lg:flex-row lg:w-auto sm:w-[75vw] flex-1 w-full items-center gap-4">
+        <div className="lg:h-full lg:w-auto lg:min-h-[500px] sm:h-[75vw] w-full aspect-square border">
           <Chessboard/>
         </div>
-        <div className="flex flex-col h-full gap-3">
+        <div className="lg:w-[250px] lg:h-full min-h-[160px] w-full flex flex-col gap-3">
           <Field>
             <FieldLabel htmlFor="num-squares">Choose a board size:</FieldLabel>
             <NativeSelect 
@@ -52,7 +50,7 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <div className="h-[100px] w-full">
+      <div className="sm:h-[100px] sm:flex-none flex-shrink w-full">
 
       </div>
     </div>
