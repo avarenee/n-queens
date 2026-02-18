@@ -13,7 +13,8 @@ interface Chessboard {
     queens: Map<number, number>;
     fill: (row: number, col: number) => void;
     reset: () => void;
-    changeBoardSize: (newSize: number) => void
+    changeBoardSize: (newSize: number) => void;
+    genSolution: () => void;
 }
 
 export const ChessboardContext = createContext<Chessboard|null>(null)

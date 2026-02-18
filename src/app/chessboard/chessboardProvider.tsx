@@ -1,6 +1,6 @@
 "use client"
 
-import { ChessboardContext, SquareData } from "@/contexts/chessboard.context"
+import { ChessboardContext, SquareData, SquareState } from "@/contexts/chessboard.context"
 import { ReactNode, useState } from "react"
 
 const queens = new Map<number, number>();
@@ -112,6 +112,75 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
         ))
     }
 
+    function genSolution(): void {
+        // Find all valid solutions using backtracking
+        // queens[row] = col means a queen is placed at (row, col)
+        const allSolutions: number[][] = []
+
+        function solve(row: number, queens: number[]): void {
+            if (row === boardSize) {
+            allSolutions.push([...queens])
+            return
+            }
+
+            for (let col = 0; col < boardSize; col++) {
+            if (isValid(queens, row, col)) {
+                queens.push(col)
+                solve(row + 1, queens)
+                queens.pop()
+            }
+            }
+        }
+
+        function isValid(queens: number[], row: number, col: number): boolean {
+            for (let r = 0; r < queens.length; r++) {
+            const c = queens[r]
+            if (c === col) return false
+            if (Math.abs(row - r) === Math.abs(col - c)) return false
+            }
+            return true
+        }
+
+        solve(0, [])
+
+        // Pick a random solution
+        const queenCols = allSolutions[Math.floor(Math.random() * allSolutions.length)]
+
+        // Build the board with queensCovering counts
+        const board: SquareData[][] = Array.from({ length: boardSize }, () =>
+            Array.from({ length: boardSize }, () => ({ state: '0' as SquareState, queensCovering: 0 }))
+        )
+
+        // Place queens
+        for (let row = 0; row < boardSize; row++) {
+            board[row][queenCols[row]].state = 'Q'
+        }
+
+        // For each square, count how many queens can capture it and set state
+        for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize; col++) {
+            if (board[row][col].state === 'Q') continue
+
+            let count = 0
+            for (let qRow = 0; qRow < boardSize; qRow++) {
+                const qCol = queenCols[qRow]
+                const sameCol = col === qCol
+                const sameRow = row === qRow
+                const sameDiag = Math.abs(row - qRow) === Math.abs(col - qCol)
+
+                if (sameCol || sameRow || sameDiag) {
+                count++
+                }
+            }
+
+            board[row][col].queensCovering = count
+            board[row][col].state = count > 0 ? '.' : '0'
+            }
+        }
+
+        setBoardRep(board)
+    }
+
     return (
         <ChessboardContext.Provider
             value={{
@@ -120,7 +189,8 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
                 queens,
                 fill,
                 reset,
-                changeBoardSize
+                changeBoardSize,
+                genSolution
             }}
         >
             {children}

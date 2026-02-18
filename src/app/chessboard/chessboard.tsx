@@ -48,7 +48,7 @@ export const Chessboard = () => {
 
   return (
     <div 
-      className="grid h-full w-full"
+      className="grid h-full w-full border"
       style={{ gridTemplateRows: `repeat(${boardSize}, minmax(0, 1fr))` }}
     >
       {range(boardSize).map((row) => 
