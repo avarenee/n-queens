@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ChessboardProvider } from "./chessboard/chessboardProvider";
 import { Header } from "./header/header";
+import { Footer } from "./footer/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,12 +27,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-col items-center`}
       >
         <Header/>
         <ChessboardProvider>
           {children}
         </ChessboardProvider>
+        <Footer/>
       </body>
     </html>
   );
