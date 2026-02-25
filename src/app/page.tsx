@@ -28,15 +28,27 @@ export default function Home() {
               defaultValue="8"
               onChange={(ev) => changeBoardSize(parseInt(ev.target.value))}
             >
+              {/* Maps over numbers 4 through 8, supports board sizes from 4x4 to 8x8 */}
               {range(4, 9).map((num) => 
                 <NativeSelectOption
-                  key={num.toString()} 
+                  key={num.toString()}
                   value={num.toString()}
+                  aria-labelledby={`board-size-${num.toString()}`}
                 >
                   {num.toString()} x {num.toString()}
                 </NativeSelectOption>
               )}
             </NativeSelect>
+            {/* Screen reader labels for board size options: reads "4 x 4" as "4 by 4" */}
+            {range(4, 9).map((num) => 
+              <span 
+                key={`board-size-${num.toString()}`} 
+                id={`board-size-${num.toString()}`} 
+                className="sr-only"
+              >
+                {num.toString()} by {num.toString()}
+              </span>
+            )}
           </Field>
           <Button 
             variant="outline" 
