@@ -4,7 +4,8 @@ export type SquareState = '0' | '.' | 'Q';
 
 export type SquareData = {
     state: SquareState,
-    queensCovering: number
+    queensCovering: number,
+    transitionDelay: number
 }
 
 interface Chessboard {

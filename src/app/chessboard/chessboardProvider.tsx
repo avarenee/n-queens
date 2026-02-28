@@ -37,7 +37,8 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
             let next = [...prev]
             next[row][col] = {
                 state: 'Q',
-                queensCovering: 1
+                queensCovering: 1,
+                transitionDelay: 0
             }
             for (let layer = 1; layer <= fillStop; layer++) {
                 for (const direction of directions) {
@@ -49,7 +50,8 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
                         const queensCovering = prev[currentRow][currentCol].queensCovering
                         next[currentRow][currentCol] = {
                             state: '.',
-                            queensCovering: queensCovering + 1
+                            queensCovering: queensCovering + 1,
+                            transitionDelay: layer
                         }
                     }
                 }
@@ -64,11 +66,7 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
         let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col)
         setBoardRep((prev) => {
             let next = [...prev]
-            next[row][col] = {
-                state: '0',
-                queensCovering: 0
-            }
-            for (let layer = 1; layer <= fillStop; layer++) {
+            for (let layer = fillStop; layer >= 1; layer--) {
                 for (const direction of directions) {
                     const currentRow = row + direction[0]*layer
                     const currentCol = col + direction[1]*layer
@@ -78,10 +76,16 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
                         const queensCovering = prev[currentRow][currentCol].queensCovering
                         next[currentRow][currentCol] = {
                             state: queensCovering === 1 ? '0' : '.',
-                            queensCovering: queensCovering - 1
+                            queensCovering: queensCovering - 1,
+                            transitionDelay: fillStop - layer
                         }
                     }
                 }
+            }
+            next[row][col] = {
+                state: '0',
+                queensCovering: 0,
+                transitionDelay: fillStop
             }
             return next
         })
@@ -148,7 +152,7 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
 
         // Build the board with queensCovering counts
         const board: SquareData[][] = Array.from({ length: boardSize }, () =>
-            Array.from({ length: boardSize }, () => ({ state: '0' as SquareState, queensCovering: 0 }))
+            Array.from({ length: boardSize }, () => ({ state: '0' as SquareState, queensCovering: 0, transitionDelay: 0 }))
         )
 
         // Place queens

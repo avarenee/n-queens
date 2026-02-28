@@ -8,6 +8,7 @@
   --darksquare-empty: #b9bb9e;
   --darksquare-filled: #66a966;
   --queen: #003b00;
+  --queen-hover: black;
 }
 
 @theme inline {
@@ -18,20 +19,20 @@
   --color-darksquare-empty: var(--darksquare-empty);
   --color-darksquare-filled: var(--darksquare-filled);
   --color-queen: var(--queen);
+  --color-queen-hover: var(--queen-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(14.5% 0 0);
-    --foreground: #dadada;
-    --lightsquare-empty: #fff;
-    --lightsquare-filled: #fff;
-    --darksquare-empty: #fff;
-    --darksquare-filled: #fff;
-    --queen: #fff;
-  }
+.dark {
+  --background: #1a1a16;
+  --foreground: #dadada;
+  --lightsquare-empty: #35352b;
+  --lightsquare-filled: #2d4a1e;
+  --darksquare-empty: #1e1e17;
+  --darksquare-filled: #1a3310;
+  --queen: #84cc16;
+  --queen-hover: black;
 }
 
 body {

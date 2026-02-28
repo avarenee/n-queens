@@ -2,6 +2,7 @@ module.exports = {
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
   ],
+  darkMode: 'class',
   safelist: [
     {
       pattern: /grid-cols-(1[0-2]|[1-9])/

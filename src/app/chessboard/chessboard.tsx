@@ -17,6 +17,7 @@ const darkMap = {
 const Square = ({row, col}: { row: number, col: number }) => {
   const { boardRep, fill } = useChessboardContext();
   const value = boardRep[row][col].state
+  const delay = boardRep[row][col].transitionDelay
 
   const squareColor: string = useMemo(() => {
     if (row % 2 === col % 2) {
@@ -34,7 +35,13 @@ const Square = ({row, col}: { row: number, col: number }) => {
     <button 
       onClick={() => fill(row, col)} 
       disabled={disabled}
-      className={cn("h-full w-full flex items-center justify-center border border-queen cursor-pointer disabled:cursor-default", squareColor)} 
+      style={{ transitionDelay: `${delay * 25}ms` }}
+      className={cn(
+        "h-full w-full flex items-center justify-center", 
+        "border border-foreground cursor-pointer disabled:cursor-default", 
+        "transition-colors ease-out duration-180",
+        squareColor
+      )} 
       data-row={row} 
       data-col={col}
     >
@@ -48,7 +55,7 @@ export const Chessboard = () => {
 
   return (
     <div 
-      className="grid h-full w-full border"
+      className="grid h-full w-full border border-foreground"
       style={{ gridTemplateRows: `repeat(${boardSize}, minmax(0, 1fr))` }}
     >
       {range(boardSize).map((row) => 
