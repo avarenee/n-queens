@@ -1,7 +1,7 @@
 "use client"
 
 import { ChessboardContext, SquareData, SquareState } from "@/contexts/chessboard.context"
-import { ReactNode, useState } from "react"
+import { ReactNode, useRef, useState } from "react"
 
 const queens = new Map<number, number>();
 
@@ -28,6 +28,25 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
             () => Array(boardSize).fill({ state: '0', queensCovering: 0 })
         )
     )
+    const [focusedSquare, setFocusedSquare] = useState<[number, number]>([0, 0])
+    const squareRefs = useRef<(HTMLButtonElement | null)[][]>([])
+
+    const handleKeyDown = (e: React.KeyboardEvent, row: number, col: number) => {
+        const moves: Record<string, [number, number]> = {
+        ArrowUp:    [-1,  0],
+        ArrowDown:  [ 1,  0],
+        ArrowLeft:  [ 0, -1],
+        ArrowRight: [ 0,  1],
+        }
+        const delta = moves[e.key]
+        if (!delta) return
+
+        e.preventDefault() // prevent page scrolling
+        const newRow = Math.max(0, Math.min(boardSize - 1, row + delta[0]))
+        const newCol = Math.max(0, Math.min(boardSize - 1, col + delta[1]))
+        setFocusedSquare([newRow, newCol])
+        squareRefs.current[newRow][newCol]?.focus()
+    }
 
     function addQueen(row: number, col: number) {
         queens.set(row, col);
@@ -92,6 +111,9 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
     }
 
     function fill(row: number, col: number) {
+        if (boardRep[row][col].state === '.') {
+            return
+        }
         if (queens.has(row)) {
             removeQueen(row, col)
         } else {
@@ -104,16 +126,18 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
         setBoardRep(Array.from(
             { length: boardSize }, 
             () => Array(boardSize).fill({ state: '0', queensCovering: 0 })
-        ))
+        ));
     }
 
     function changeBoardSize(newSize: number) {
         queens.clear();
-        setBoardSize(newSize)
+        setBoardSize(newSize);
         setBoardRep(Array.from(
             { length: newSize }, 
             () => Array(newSize).fill({ state: '0', queensCovering: 0 })
-        ))
+        ));
+        setFocusedSquare([0, 0]);
+        squareRefs.current = [];
     }
 
     function genSolution(): void {
@@ -190,10 +214,13 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
             value={{
                 boardSize,
                 boardRep,
+                squareRefs,
+                focusedSquare,
                 queens,
                 fill,
                 reset,
                 changeBoardSize,
+                handleKeyDown,
                 genSolution
             }}
         >

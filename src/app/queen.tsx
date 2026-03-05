@@ -16,12 +16,10 @@ const viewBehaviorMap = {
 }
 
 const Queen = ({ squareState }: QueenProps) => {
-
-  const fillColor = squareState === 'Q' ? "#003b00" : "#000000";
   const viewBehavior = viewBehaviorMap[squareState]
 
   return (
-    <div className="group relative w-full h-full flex items-center justify-center">
+    <div className="relative w-full h-full flex items-center justify-center">
       <svg className={cn("w-4/5 h-4/5", viewBehavior)} xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 45 45" width="100%" height="100%">
         <g opacity="1" fill="#ffffff" fillOpacity="0" fillRule="evenodd" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="4" strokeDasharray="none" strokeOpacity="1">
           <rect x="0" y="0" fill="#ffffff" width="45" height="45" fillOpacity="0" stroke="none" />

@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import React, { createContext } from "react";
 
 export type SquareState = '0' | '.' | 'Q';
 
@@ -11,10 +11,13 @@ export type SquareData = {
 interface Chessboard {
     boardSize: number;
     boardRep: SquareData[][];
+    squareRefs: React.Ref<(HTMLButtonElement | null)[][]>;
+    focusedSquare: [number, number];
     queens: Map<number, number>;
     fill: (row: number, col: number) => void;
     reset: () => void;
     changeBoardSize: (newSize: number) => void;
+    handleKeyDown: (e: React.KeyboardEvent, row: number, column: number) => void;
     genSolution: () => void;
 }
 

@@ -15,9 +15,10 @@ const darkMap = {
 }
 
 const Square = ({row, col}: { row: number, col: number }) => {
-  const { boardRep, fill } = useChessboardContext();
-  const value = boardRep[row][col].state
-  const delay = boardRep[row][col].transitionDelay
+  const { boardRep, fill, focusedSquare, squareRefs, handleKeyDown } = useChessboardContext();
+  const value = boardRep[row][col].state;
+  const delay = boardRep[row][col].transitionDelay;
+  const isFocused = focusedSquare[0] === row && focusedSquare[1] === col;
 
   const squareColor: string = useMemo(() => {
     if (row % 2 === col % 2) {
@@ -30,17 +31,29 @@ const Square = ({row, col}: { row: number, col: number }) => {
   const disabled = useMemo(() => {
     return value === "."
   }, [value])
+
+  // Accessible screen-reader label for square
+  const squareLabel = disabled
+    ? `Row ${row + 1}, column ${col + 1}, queen can capture square`
+  : value === 'Q'
+    ? `Row ${row + 1}, column ${col + 1}, queen placed`
+    : `Row ${row + 1}, column ${col + 1}`
   
   return (
-    <button 
+    <button
+      ref={(el) => { squareRefs.current[row] ??= []; squareRefs.current[row][col] = el }}
+      tabIndex={isFocused ? 0 : -1}
+      onKeyDown={(e) => handleKeyDown(e, row, col)}
       onClick={() => fill(row, col)} 
-      disabled={disabled}
+      aria-disabled={disabled}
+      aria-label={squareLabel}
       style={{ transitionDelay: `${delay * 25}ms` }}
       className={cn(
-        "h-full w-full flex items-center justify-center", 
-        "border border-foreground cursor-pointer disabled:cursor-default", 
+        "group h-full w-full flex items-center justify-center", 
+        "border border-foreground cursor-pointer aria-disabled:cursor-default", 
         "transition-colors ease-out duration-180",
-        squareColor
+        squareColor,
+        isFocused && "focus:scale-125"
       )} 
       data-row={row} 
       data-col={col}
