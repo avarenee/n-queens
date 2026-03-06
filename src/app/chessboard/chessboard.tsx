@@ -50,10 +50,10 @@ const Square = ({row, col}: { row: number, col: number }) => {
       style={{ transitionDelay: `${delay * 25}ms` }}
       className={cn(
         "group h-full w-full flex items-center justify-center", 
-        "border border-foreground cursor-pointer aria-disabled:cursor-default", 
-        "transition-colors ease-out duration-180",
+        "cursor-pointer aria-disabled:cursor-default", 
+        "transition-[background-color] ease-out duration-180",
         squareColor,
-        isFocused && "focus:scale-125"
+        isFocused && "focus:scale-125 focus-visible:border-ring focus-visible:border-0 focus-visible:ring-2 focus-visible:ring-queen focus-visible:outline-none"
       )} 
       data-row={row} 
       data-col={col}
@@ -68,7 +68,7 @@ export const Chessboard = () => {
 
   return (
     <div 
-      className="grid h-full w-full border border-foreground"
+      className="grid h-full w-full border border-2 border-board"
       style={{ gridTemplateRows: `repeat(${boardSize}, minmax(0, 1fr))` }}
     >
       {range(boardSize).map((row) => 

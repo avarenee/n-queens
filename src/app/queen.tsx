@@ -12,7 +12,7 @@ type QueenProps = {
 const viewBehaviorMap = {
   'Q': "visible text-queen",
   '.': "invisible text-queen",
-  '0': "invisible group-hover:visible text-queen-hover"
+  '0': "invisible group-hover:visible group-focus-visible:visible text-queen-hover"
 }
 
 const Queen = ({ squareState }: QueenProps) => {
