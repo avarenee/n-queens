@@ -1,18 +1,34 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
 :root {
-  --background: #e0e2c7;
-  --foreground: oklch(14.5% 0 0);
-  --accent: #003b00;
-  --shadow: #b9bb9e;
-  --board: #72745a;
-  --toggle: #b9bb9e;
-  --lightsquare-empty: #e0e2c7;
-  --lightsquare-filled: #93d88b;
-  --darksquare-empty: #b9bb9e;
-  --darksquare-filled: #66a966;
-  --queen: #003b00;
-  --queen-hover: oklch(14.5% 0 0);
+  /* Semantic */
+  --background: oklch(90.4% 0.0359 110.6);
+  --foreground: oklch(21.6% 0.0076 107.1);
+  --accent: oklch(30.5% 0.1039 142.5);
+
+  /* Warm grey scale */
+  --grey-100: oklch(90.4% 0.0359 110.6);
+  --grey-200: oklch(78.3% 0.0398 110.6);
+  --grey-300: oklch(55.0% 0.0386 111.3);
+  --grey-400: oklch(48.0% 0.0262 107.4);
+  --grey-500: oklch(21.6% 0.0076 107.1);
+
+  /* Green scale */
+  --green-100: oklch(81.7% 0.1263 141.9);
+  --green-200: oklch(67.3% 0.1185 144.1);
+  --green-300: oklch(30.5% 0.1039 142.5);
+
+  /* Aliases */
+  --board: var(--grey-300);
+  --shadow: var(--grey-200);
+  --toggle: var(--grey-200);
+  --lightsquare-empty: var(--grey-100);
+  --lightsquare-filled: var(--green-100);
+  --darksquare-empty: var(--grey-200);
+  --darksquare-filled: var(--green-200);
+  --queen: var(--green-300);
+  --queen-hover: var(--grey-500);
 }
 
 @theme inline {
@@ -28,23 +44,36 @@
   --color-darksquare-filled: var(--darksquare-filled);
   --color-queen: var(--queen);
   --color-queen-hover: var(--queen-hover);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 .dark {
-  --background: #1a1a16;
-  --foreground: #dadada;
+  /* Semantic */
+  --background: oklch(21.6% 0.0076 107.1);
+  --foreground: oklch(88.8% 0 0);
   --accent: oklch(76.8% 0.233 130.85);
-  --shadow: black;
-  --board: #5f5f4e;
-  --toggle: #35352b;
-  --lightsquare-empty: #35352b;
-  --lightsquare-filled: #2d4a1e;
-  --darksquare-empty: #1e1e17;
-  --darksquare-filled: #1a3310;
-  --queen: oklch(76.8% 0.233 130.85);
-  --queen-hover: #dadada;
+
+  /* Warm grey scale */
+  --grey-100: oklch(88.8% 0 0);
+  --grey-200: oklch(48.0% 0.0262 107.4);
+  --grey-300: oklch(32.6% 0.017 107.4);
+  --grey-400: oklch(28.2% 0.0141 107.3);
+  --grey-500: oklch(25.4% 0.0127 107.3);
+
+  /* Green scale */
+  --green-100: oklch(37.5% 0.0776 136.1);
+  --green-200: oklch(29.1% 0.0661 137.7);
+  --green-300: oklch(76.8% 0.233 130.85);
+
+  /* Aliases */
+  --board: var(--grey-200);
+  --shadow: oklch(0% 0 0);
+  --toggle: var(--grey-300);
+  --lightsquare-empty: var(--grey-300);
+  --lightsquare-filled: var(--green-100);
+  --darksquare-empty: var(--grey-500);
+  --darksquare-filled: var(--green-200);
+  --queen: var(--green-300);
+  --queen-hover: var(--grey-100);
 }
 
 body {

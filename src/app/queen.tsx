@@ -5,10 +5,10 @@ type QueenProps = {
   squareState: SquareState
 }
 
-/* how to display the queen based on the square state */
-/* state 'Q': queen is placed there, show the queen */
-/* state '.': queen can't be placed there, don't show the queen */
-/* state '0': queen can be placed there, show queen on hover */
+// How to display the queen based on the square state
+// state 'Q': queen is placed there, show the queen
+// state '.': queen can't be placed there, don't show the queen
+// state '0': queen can be placed there, show queen on hover
 const viewBehaviorMap = {
   'Q': "visible text-queen",
   '.': "invisible text-queen",

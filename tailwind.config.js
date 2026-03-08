@@ -3,6 +3,9 @@ module.exports = {
     './src/**/*.{js,jsx,ts,tsx}',
   ],
   darkMode: 'class',
+  plugins: [
+		require("tailwindcss-animate"),
+	],
   safelist: [
     {
       pattern: /grid-cols-(1[0-2]|[1-9])/

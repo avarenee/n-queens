@@ -1,19 +1,20 @@
 "use client"
 
-import { ChessboardContext, SquareData, SquareState } from "@/contexts/chessboard.context"
-import { ReactNode, useRef, useState } from "react"
+import { ChessboardContext, DialogStatus, SquareData, SquareState } from "@/contexts/chessboard.context"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 
 const queens = new Map<number, number>();
 
+// Direction of cells relative to where queen is placed
 const directions = [
-    [-1, -1],
-    [-1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1],
-    [1, 0],
-    [1, -1],
-    [0, -1]
+    [-1, -1], // NW
+    [-1, 0],  // N
+    [-1, 1],  // NE
+    [0, 1],   // E
+    [1, 1],   // SE
+    [1, 0],   // S
+    [1, -1],  // SW
+    [0, -1]   // W
 ]
 
 interface ChessboardProviderProps {
@@ -25,9 +26,29 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
     const [boardRep, setBoardRep] = useState<SquareData[][]>(
         Array.from(
             { length: boardSize }, 
-            () => Array(boardSize).fill({ state: '0', queensCovering: 0 })
+            () => Array(boardSize).fill({ state: '0', queensAttacking: 0, transitionDelay: 0 })
         )
     )
+
+    // Number of squares not attacked or occupied by any queen
+    // If freeSquares === 0 and queens.size === boardSize, win condition reached
+    // If freeSquares === 0 and queens.size < boardSize, loss condition reached 
+    const freeSquares = useMemo(
+        () => boardRep.flat().filter((square) => square.state === '0').length,
+        [boardRep]
+    )
+
+    // Status for showing the dialog. It has four states:
+    //
+    // "win":      User has won, show congratulations dialog
+    // "lose":     User has lost, show retry dialog
+    // "unset":    User hasn't won or lost, don't show dialog until they do
+    // "solution": When user presses the button to show solution, set status to solution.
+    //             The congratulations dialog will not be shown, even though board is in win state.
+    //             Once the user manually inputs a move again, status is set to "unset"
+    const [dialogStatus, setDialogStatus] = useState<DialogStatus>("unset");
+
+    // Ref used to establish roving tabIndex for board
     const [focusedSquare, setFocusedSquare] = useState<[number, number]>([0, 0])
     const squareRefs = useRef<(HTMLButtonElement | null)[][]>([])
 
@@ -51,14 +72,16 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
     function addQueen(row: number, col: number) {
         queens.set(row, col);
 
-        let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col)
+        let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col);
+
         setBoardRep((prev) => {
-            let next = [...prev]
+            let next = prev.map((row) => [...row])
             next[row][col] = {
                 state: 'Q',
-                queensCovering: 1,
+                queensAttacking: 1,
                 transitionDelay: 0
             }
+
             for (let layer = 1; layer <= fillStop; layer++) {
                 for (const direction of directions) {
                     const currentRow = row + direction[0]*layer
@@ -66,10 +89,10 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
                     if (currentRow < 0 || currentRow >= boardSize || currentCol < 0 || currentCol >= boardSize) {
                         continue;
                     } else {
-                        const queensCovering = prev[currentRow][currentCol].queensCovering
+                        const queensAttacking = prev[currentRow][currentCol].queensAttacking
                         next[currentRow][currentCol] = {
                             state: '.',
-                            queensCovering: queensCovering + 1,
+                            queensAttacking: queensAttacking + 1,
                             transitionDelay: layer
                         }
                     }
@@ -82,9 +105,10 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
     function removeQueen(row: number, col: number) {
         queens.delete(row);
 
-        let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col)
+        let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col);
+
         setBoardRep((prev) => {
-            let next = [...prev]
+            let next = prev.map((row) => [...row])
             for (let layer = fillStop; layer >= 1; layer--) {
                 for (const direction of directions) {
                     const currentRow = row + direction[0]*layer
@@ -92,10 +116,10 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
                     if (currentRow < 0 || currentRow >= boardSize || currentCol < 0 || currentCol >= boardSize) {
                         continue;
                     } else {
-                        const queensCovering = prev[currentRow][currentCol].queensCovering
+                        const queensAttacking = prev[currentRow][currentCol].queensAttacking
                         next[currentRow][currentCol] = {
-                            state: queensCovering === 1 ? '0' : '.',
-                            queensCovering: queensCovering - 1,
+                            state: queensAttacking === 1 ? '0' : '.',
+                            queensAttacking: queensAttacking - 1,
                             transitionDelay: fillStop - layer
                         }
                     }
@@ -103,7 +127,7 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
             }
             next[row][col] = {
                 state: '0',
-                queensCovering: 0,
+                queensAttacking: 0,
                 transitionDelay: fillStop
             }
             return next
@@ -114,41 +138,49 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
         if (boardRep[row][col].state === '.') {
             return
         }
+        // User has interacted, set dialog status to "unset"
+        if (dialogStatus !== "unset") {
+            setDialogStatus("unset");
+        }
         if (queens.has(row)) {
-            removeQueen(row, col)
+            removeQueen(row, col);
         } else {
-            addQueen(row, col)
+            addQueen(row, col);
         }
     }
 
     function reset() {
         queens.clear();
+        setDialogStatus("unset");
         setBoardRep(Array.from(
             { length: boardSize }, 
-            () => Array(boardSize).fill({ state: '0', queensCovering: 0 })
+            () => Array(boardSize).fill({ state: '0', queensAttacking: 0 })
         ));
     }
 
     function changeBoardSize(newSize: number) {
         queens.clear();
+        setDialogStatus("unset");
         setBoardSize(newSize);
         setBoardRep(Array.from(
             { length: newSize }, 
-            () => Array(newSize).fill({ state: '0', queensCovering: 0 })
+            () => Array(newSize).fill({ state: '0', queensAttacking: 0 })
         ));
         setFocusedSquare([0, 0]);
         squareRefs.current = [];
     }
 
     function genSolution(): void {
+        setDialogStatus("solution");
+
         // Find all valid solutions using backtracking
         // queens[row] = col means a queen is placed at (row, col)
         const allSolutions: number[][] = []
 
         function solve(row: number, queens: number[]): void {
             if (row === boardSize) {
-            allSolutions.push([...queens])
-            return
+                allSolutions.push([...queens])
+                return
             }
 
             for (let col = 0; col < boardSize; col++) {
@@ -174,40 +206,59 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
         // Pick a random solution
         const queenCols = allSolutions[Math.floor(Math.random() * allSolutions.length)]
 
-        // Build the board with queensCovering counts
+        // Build the board with queensAttacking counts
         const board: SquareData[][] = Array.from({ length: boardSize }, () =>
-            Array.from({ length: boardSize }, () => ({ state: '0' as SquareState, queensCovering: 0, transitionDelay: 0 }))
+            Array.from({ length: boardSize }, () => ({ state: '0' as SquareState, queensAttacking: 0, transitionDelay: 0 }))
         )
 
         // Place queens
         for (let row = 0; row < boardSize; row++) {
-            board[row][queenCols[row]].state = 'Q'
+            board[row][queenCols[row]] = {
+                ...board[row][queenCols[row]],
+                state: 'Q'
+            }
+            queens.set(row, queenCols[row])
         }
 
         // For each square, count how many queens can capture it and set state
         for (let row = 0; row < boardSize; row++) {
             for (let col = 0; col < boardSize; col++) {
-            if (board[row][col].state === 'Q') continue
-
-            let count = 0
-            for (let qRow = 0; qRow < boardSize; qRow++) {
-                const qCol = queenCols[qRow]
-                const sameCol = col === qCol
-                const sameRow = row === qRow
-                const sameDiag = Math.abs(row - qRow) === Math.abs(col - qCol)
-
-                if (sameCol || sameRow || sameDiag) {
-                count++
+                if (board[row][col].state === 'Q') {
+                    continue;
                 }
-            }
 
-            board[row][col].queensCovering = count
-            board[row][col].state = count > 0 ? '.' : '0'
+                let count = 0
+                for (let qRow = 0; qRow < boardSize; qRow++) {
+                    const qCol = queenCols[qRow]
+                    const sameCol = col === qCol
+                    const sameRow = row === qRow
+                    const sameDiag = Math.abs(row - qRow) === Math.abs(col - qCol)
+
+                    if (sameCol || sameRow || sameDiag) {
+                    count++
+                    }
+                }
+
+                board[row][col] = {
+                    ...board[row][col],
+                    queensAttacking: count,
+                    state: count > 0 ? '.' : '0'
+                }
             }
         }
 
         setBoardRep(board)
     }
+
+    useEffect(() => {
+        if (freeSquares === 0 && dialogStatus !== "solution") {
+            if (queens.size === boardSize) {
+                setDialogStatus("win")
+            } else {
+                setDialogStatus("lose")
+            }
+        }
+    }, [freeSquares])
 
     return (
         <ChessboardContext.Provider
@@ -216,10 +267,13 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
                 boardRep,
                 squareRefs,
                 focusedSquare,
+                freeSquares,
+                dialogStatus,
                 queens,
                 fill,
                 reset,
                 changeBoardSize,
+                setDialogStatus,
                 handleKeyDown,
                 genSolution
             }}
