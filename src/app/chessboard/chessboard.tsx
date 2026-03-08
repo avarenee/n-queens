@@ -1,8 +1,8 @@
-import range from "@/utils/range";
+import { range } from "@/utils/range";
 import useChessboardContext from "./useChessboardContext";
 import { cn } from "@/lib/utils";
 import Queen from "../queen";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 const lightMap = {
   0: "bg-lightsquare-empty",
@@ -38,10 +38,15 @@ const Square = ({row, col}: { row: number, col: number }) => {
   : value === 'Q'
     ? `Row ${row + 1}, column ${col + 1}, queen placed`
     : `Row ${row + 1}, column ${col + 1}`
+
+  const setSquareRef = useCallback((el: HTMLButtonElement | null) => {
+    squareRefs.current[row] ??= []; 
+    squareRefs.current[row][col] = el;
+  }, [])
   
   return (
     <button
-      ref={(el) => { squareRefs.current[row] ??= []; squareRefs.current[row][col] = el }}
+      ref={(el) => setSquareRef(el)}
       tabIndex={isFocused ? 0 : -1}
       onKeyDown={(e) => handleKeyDown(e, row, col)}
       onClick={() => fill(row, col)} 
@@ -53,7 +58,7 @@ const Square = ({row, col}: { row: number, col: number }) => {
         "cursor-pointer aria-disabled:cursor-default", 
         "transition-[background-color] ease-out duration-180",
         squareColor,
-        isFocused && "focus:scale-125 focus-visible:border-ring focus-visible:border-0 focus-visible:ring-2 focus-visible:ring-queen focus-visible:outline-none"
+        isFocused && "focus-visible:scale-115 focus-visible:border-ring focus-visible:border-0 focus-visible:ring-2 focus-visible:ring-queen focus-visible:outline-none"
       )} 
       data-row={row} 
       data-col={col}

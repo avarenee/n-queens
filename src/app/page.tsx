@@ -3,18 +3,18 @@
 import React from "react";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import useChessboardContext from "./chessboard/useChessboardContext";
-import range from "@/utils/range";
+import { rangeInclusive } from "@/utils/range";
 import { Chessboard } from "./chessboard/chessboard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Home() {
-  const { changeBoardSize, reset, genSolution } = useChessboardContext();
+  const { changeBoardSize, freeSquares, reset, genSolution } = useChessboardContext();
 
   return (
     <div className="flex-1 flex flex-col items-center lg:w-[max(calc(100vh-19rem+252px),750px)] lg:min-h-[650px] sm:w-[75vw] h-full w-full">
-      <div className="pb-4 sm:px-0 px-4 flex flex-col justify-end flex-none lg:h-[150px] h-[120px] w-full text-center lg:text-lg text-sm">
-        <p>The objective of the "N Queens" puzzle is to place n queens on an n x n chessboard such that no queens can capture each other. Configure the board below and try your skill at solving the puzzle!</p>
+      <div className="sm:pb-6 pb-0 sm:px-0 px-4 flex flex-col sm:justify-end justify-center flex-none h-[150px] w-full text-center lg:text-xl sm:text-lg text-md">
+        <p>The objective of the "N Queens" puzzle is to place n queens on an <span className="whitespace-nowrap">n x n</span> chessboard such that no two queens can capture each other. Configure the board below and try your skill at solving the puzzle!</p>
       </div>
       <div className="flex lg:flex-row flex-col flex-1 w-full">
         <div className="lg:h-full lg:min-h-[500px] lg:w-auto w-full aspect-square">
@@ -22,37 +22,32 @@ export default function Home() {
         </div>
         <div className="flex flex-col lg:pl-4 lg:pt-0 sm:px-0 px-4 pt-4 lg:w-[250px] lg:h-full lg:flex-none min-h-[160px] flex-1 w-full gap-3">
           <Field>
-            <FieldLabel htmlFor="num-squares">Choose a board size:</FieldLabel>
-            <NativeSelect 
-              id="num-squares"
-              defaultValue="8"
-              onChange={(ev) => changeBoardSize(parseInt(ev.target.value))}
-            >
-              {/* Maps over numbers 4 through 8, supports board sizes from 4x4 to 8x8 */}
-              {range(4, 9).map((num) => 
-                <NativeSelectOption
-                  key={num.toString()}
-                  value={num.toString()}
-                  aria-labelledby={`board-size-${num.toString()}`}
-                >
-                  {num.toString()} x {num.toString()}
-                </NativeSelectOption>
-              )}
-            </NativeSelect>
-            {/* Screen reader labels for board size options: reads "4 x 4" as "4 by 4" */}
-            {range(4, 9).map((num) => 
-              <span 
-                key={`board-size-${num.toString()}`} 
-                id={`board-size-${num.toString()}`} 
-                className="sr-only"
+            <FieldLabel className="text-md" htmlFor="num-squares">Choose a board size:</FieldLabel>
+            <Select defaultValue="8" onValueChange={(val) => changeBoardSize(parseInt(val))}>
+              <SelectTrigger 
+                id="num-squares"
+                className="w-full rounded-lg bg-white/5 text-foreground border border-foreground/10 px-4 py-2 hover:bg-foreground/10 transition-colors"
               >
-                {num.toString()} by {num.toString()}
-              </span>
-            )}
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent position="popper" className="bg-background border border-foreground/10 rounded-lg">
+                {rangeInclusive(4, 8).map((num) =>
+                  <SelectItem
+                    key={num.toString()}
+                    value={num.toString()}
+                    aria-label={`${num} by ${num}`}
+                    className="text-foreground hover:bg-white cursor-pointer"
+                  >
+                    {num} x {num}
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </Field>
           <Button 
             variant="outline" 
             type="button"
+            className="w-full rounded-lg bg-white/5 text-foreground border border-foreground/10 px-4 py-2 hover:bg-foreground/10 transition-colors"
             onClick={reset}
           >
             Reset
@@ -60,6 +55,7 @@ export default function Home() {
           <Button 
             variant="outline" 
             type="button"
+            className="w-full rounded-lg bg-accent/15 text-accent border border-accent/25 px-4 py-2 hover:bg-accent/25 transition-colors"
             onClick={genSolution}
           >
             Show solution

@@ -16,7 +16,7 @@ export const Header = () => {
   }, [dark])
 
   return (
-    <header className="h-14 px-8 md:px-12 py-4 text-xl font-bold flex flex-none items-center justify-between border-b w-full">
+    <header className="h-14 px-8 md:px-12 py-4 text-2xl font-bold flex flex-none items-center justify-between shadow-shadow shadow-sm w-full">
         <h1>n-queens</h1>
         <DarkModeSwitch 
           checked={dark}
