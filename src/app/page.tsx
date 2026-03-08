@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <div className="flex-1 flex flex-col items-center lg:w-[max(calc(100vh-19rem+252px),750px)] lg:min-h-[650px] sm:w-[75vw] h-full w-full">
       <div className="sm:pb-6 pb-0 sm:px-0 px-4 flex flex-col sm:justify-end justify-center flex-none h-[150px] w-full text-center lg:text-xl sm:text-lg text-md">
-        <p>The objective of the "N Queens" puzzle is to place n queens on an <span className="whitespace-nowrap">n x n</span> chessboard such that no two queens can capture each other. Configure the board below and try your skill at solving the puzzle!</p>
+        <p>The objective of the &quot;N Queens&quot; puzzle is to place n queens on an <span className="whitespace-nowrap">n x n</span> chessboard such that no two queens can capture each other. Configure the board below and try your skill at solving the puzzle!</p>
       </div>
       <div className="flex lg:flex-row flex-col flex-1 w-full">
         <div className="lg:h-full lg:min-h-[500px] lg:w-auto w-full aspect-square">

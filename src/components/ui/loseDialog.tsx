@@ -24,7 +24,7 @@ export const LoseDialog = ({open, onOpenChange}: LoseDialogProps) => {
         <DialogHeader>
           <DialogTitle>Sorry!</DialogTitle>
           <DialogDescription>
-            That's not a valid solution. Would you like to try again?
+            That&apos;s not a valid solution. Would you like to try again?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -72,10 +72,10 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
     function addQueen(row: number, col: number) {
         queens.set(row, col);
 
-        let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col);
+        const fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col);
 
         setBoardRep((prev) => {
-            let next = prev.map((row) => [...row])
+            const next = prev.map((row) => [...row])
             next[row][col] = {
                 state: 'Q',
                 queensAttacking: 1,
@@ -105,10 +105,10 @@ export const ChessboardProvider: React.FC<ChessboardProviderProps> = ({ children
     function removeQueen(row: number, col: number) {
         queens.delete(row);
 
-        let fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col);
+        const fillStop: number = Math.max(row, col, (boardSize - 1) - row, (boardSize - 1) - col);
 
         setBoardRep((prev) => {
-            let next = prev.map((row) => [...row])
+            const next = prev.map((row) => [...row])
             for (let layer = fillStop; layer >= 1; layer--) {
                 for (const direction of directions) {
                     const currentRow = row + direction[0]*layer
