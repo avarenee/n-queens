@@ -35,7 +35,7 @@ export const LoseDialog = ({open, onOpenChange}: LoseDialogProps) => {
                 variant="secondary"
                 onClick={reset}
               >
-                Reset Board
+                Reset board
               </Button>
             </DialogClose>
             <DialogClose asChild>

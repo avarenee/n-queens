@@ -35,7 +35,7 @@ export const WinDialog = ({open, onOpenChange}: WinDialogProps) => {
                 variant="secondary"
                 onClick={reset}
               >
-                Reset Board
+                Reset board
               </Button>
             </DialogClose>
             <DialogClose asChild>
